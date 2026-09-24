@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  {% if unlock %}
+    <h2>Request Account Unlock</h2>
+    <p>Submit an account unlock request. An administrator will review and unlock your account.</p>
+    <form method="post">
+      <label>Registered Email</label>
+      <input name="email" type="email" required>
+      <button type="submit">Request Unlock</button>
+    </form>
+  {% else %}
+    <h2>Reset Password</h2>
+    <p>Submit a new-password request for administrator approval.</p>
+    <form method="post">
+      <label>Registered Email</label>
+      <input name="email" type="email" required>
+      <label>New Password</label>
+      <input name="new_password" type="password" required>
+      <button type="submit">Submit Request</button>
+    </form>
+  {% endif %}
+</section>
+{% endblock %}

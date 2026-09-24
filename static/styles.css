@@ -1,0 +1,85 @@
+:root{
+
+
+	:root{--bg:#f5f7fb;--card:#ffffff;--text:#222222;--muted:#6b7280;--brand:#0563ff;--accent:#7c3aed;--success:#16a34a;--danger:#dc2626}
+
+	*{box-sizing:border-box}
+	body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0}
+
+	.container{max-width:1100px;margin:28px auto;padding:18px}
+
+	.card{background:var(--card);border-radius:10px;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
+
+	h1,h2,h3{margin:0 0 12px 0}
+
+	.filter{display:flex;gap:8px;align-items:center}
+
+	table{width:100%;border-collapse:collapse;margin-top:12px}
+	table th,table td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left}
+
+	input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6edf3}
+
+	button{padding:10px 14px;border-radius:8px;border:none;background:var(--brand);color:#fff;cursor:pointer}
+	button.secondary{background:#eef2ff;color:var(--brand);border:1px solid #dde8ff}
+	button.primary{background:var(--brand)}
+
+	.muted{color:var(--muted);font-size:0.95em}
+
+	.grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+
+	.brand-panel{background:linear-gradient(180deg,var(--brand),#2b6eff);color:#fff;padding:28px;border-radius:12px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+
+	.auth-card{background:var(--card);border-radius:10px;padding:22px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+
+	.status-tag{padding:6px 10px;border-radius:999px;font-weight:600;font-size:0.9em}
+	.status-pending{background:#fff7ed;color:#92400e}
+	.status-approved{background:#ecfdf5;color:#064e3b}
+	.status-rejected{background:#fef2f2;color:#991b1b}
+
+	@media(max-width:880px){.grid{grid-template-columns:1fr}.brand-panel{align-items:center;text-align:center}}
+
+	/* Header layout */
+	header{padding:18px 0}
+	header .container{display:flex;align-items:center;justify-content:space-between}
+	header h1{font-size:26px;margin:0;color:var(--text)}
+	header nav a{margin-left:14px;color:var(--brand);text-decoration:none;font-weight:600}
+
+	/* Login page specifics */
+	.login-grid{display:grid;grid-template-columns:460px 1fr;gap:32px;align-items:center;min-height:calc(100vh - 170px)}
+	.brand-panel{display:flex;align-items:center;justify-content:center}
+	.brand-inner{margin:0}
+
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;font-size:13px}
+.status-in{background:#ecfdf5;color:var(--success)}
+.status-low{background:#fff7ed;color:#b45309}
+.status-out{background:#fff1f2;color:var(--danger)}
+
+.filter{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+
+input, select, button{padding:10px 12px;border:1px solid rgba(15,23,36,0.06);border-radius:8px}
+input:focus, select:focus{outline:none;box-shadow:0 6px 24px rgba(37,99,235,0.12);border-color:var(--primary-600)}
+
+button{background:var(--primary);color:white;border:none;cursor:pointer;border-radius:8px;padding:10px 14px;font-weight:700}
+button.secondary{background:#f3f4f6;color:#111827;border:1px solid rgba(15,23,36,0.06)}
+
+.flashes{list-style:none;padding:0;margin:8px 0}
+.flash{padding:10px;border-radius:8px;margin-bottom:8px;font-weight:600}
+.flash.success{background:rgba(16,185,129,0.12);color:var(--success)}
+.flash.danger{background:rgba(239,68,68,0.08);color:var(--danger)}
+.flash.info{background:rgba(124,58,237,0.06);color:var(--accent)}
+
+.grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
+
+.brand-panel{border-radius:12px}
+
+.auth-card{max-width:520px;margin:0 auto}
+.auth-card h2{font-size:26px;margin-bottom:6px}
+.auth-card .muted{color:var(--muted);margin-bottom:12px}
+.auth-card .small{font-size:13px}
+.auth-form label{display:block;margin-top:12px;font-weight:700;color:var(--muted);font-size:13px}
+.auth-form input{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(15,23,36,0.06);margin-top:6px}
+.actions{display:flex;gap:12px;margin-top:18px}
+.primary{background:var(--primary);color:#fff;padding:10px 16px;border-radius:8px;border:none;text-decoration:none}
+.secondary{background:#16A34A;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none}
+
+@media (max-width:900px){.grid{grid-template-columns:1fr}header{padding:12px}main{padding:16px}.card{margin:12px}}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h2>Create Account</h2>
+  <p>Create a new user account. Admin accounts must be created by an administrator.</p>
+  <form method="post">
+    <label>Username</label>
+    <input name="username" required>
+    <label>Email</label>
+    <input name="email" type="email" required>
+    <label>Password</label>
+    <input name="password" type="password" required>
+    <label>Confirm Password</label>
+    <input name="confirm_password" type="password" required>
+    <button type="submit">Create Account</button>
+  </form>
+  <p style="margin-top:12px">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+</section>
+{% endblock %}

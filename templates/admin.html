@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+  <section class="card">
+    <h2>Admin Approvals</h2>
+
+    <h3>Password Reset Requests</h3>
+    <table>
+      <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Status</th><th>Requested</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for r in requests %}
+        <tr>
+          <td>{{ r[0] }}</td>
+          <td>{{ r[1] }}</td>
+          <td>{{ r[2] }}</td>
+          <td>{{ r[3] }}</td>
+          <td>{{ r[4] }}</td>
+          <td>
+            <form method="post" action="{{ url_for('admin_review', request_id=r[0]) }}">
+              <button name="action" value="approve" class="primary">Approve</button>
+              <button name="action" value="reject" class="secondary">Reject</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:18px">Borrow Requests</h3>
+    <table>
+      <thead><tr><th>Borrow ID</th><th>Student</th><th>Item</th><th>Qty</th><th>Pay By</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for b in borrow_rows %}
+        <tr>
+          <td>{{ b[0] }}</td>
+          <td>{{ b[1] }}</td>
+          <td>{{ b[4] }} (ID {{ b[3] }})</td>
+          <td>{{ b[5] }}</td>
+          <td>{{ b[6] }}</td>
+          <td>{{ b[8] }}</td>
+          <td>
+            {% if b[8] == 'PENDING' %}
+              <form method="post" action="{{ url_for('admin_approve_borrow', borrow_id=b[0]) }}" style="display:inline">
+                <button type="submit" class="primary">Approve</button>
+              </form>
+              <form method="post" action="{{ url_for('admin_reject_borrow', borrow_id=b[0]) }}" style="display:inline">
+                <button type="submit" class="secondary">Reject</button>
+              </form>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <aside class="card" style="height:fit-content">
+    <h3>Summary</h3>
+    <p><strong>Total Stocks</strong><div class="muted">{{ total_stocks }}</div></p>
+    <p><strong>Total Borrowed</strong><div class="muted">{{ total_borrowed }}</div></p>
+
+    <h3 style="margin-top:18px">Return Requests</h3>
+    <table>
+      <thead><tr><th>ID</th><th>Borrow ID</th><th>Qty</th><th>Requested</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for rr in return_rows %}
+        <tr>
+          <td>{{ rr[0] }}</td>
+          <td>{{ rr[1] }}</td>
+          <td>{{ rr[2] }}</td>
+          <td>{{ rr[4] }}</td>
+          <td>
+            {% if rr[3] == 'PENDING' %}
+              <form method="post" action="{{ url_for('admin_approve_return', return_id=rr[0]) }}" style="display:inline">
+                <button type="submit" class="primary">Approve</button>
+              </form>
+              <form method="post" action="{{ url_for('admin_reject_return', return_id=rr[0]) }}" style="display:inline">
+                <button type="submit" class="secondary">Reject</button>
+              </form>
+            {% else %}
+              {{ rr[3] }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </aside>
+</div>
+{% endblock %}

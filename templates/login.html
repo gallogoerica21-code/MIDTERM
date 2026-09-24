@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="login-grid">
+  <aside class="brand-panel">
+    <div class="brand-inner">
+      <div class="brand-icon">🎓</div>
+      <h3>CAMPUS HARDWARE</h3>
+      <p class="subtitle">INVENTORY MANAGEMENT SYSTEM</p>
+      <p class="desc">Track equipment, manage campus resources, and maintain reliable records.</p>
+      <div class="tagline">SECURE • ORGANIZED • ACCOUNTABLE</div>
+    </div>
+  </aside>
+
+  <section class="card auth-card">
+    <h2>Welcome back</h2>
+    <p class="muted">Sign in or create an account to continue.</p>
+    <form method="post" class="auth-form">
+      <label>Username</label>
+      <input name="username" required>
+
+      <label>Email</label>
+      <input name="email">
+
+      <label>Password</label>
+      <input name="password" type="password" required>
+
+      <label>Login As</label>
+      <div class="role-row">
+        <select name="role">
+          <option value="USER" selected>User</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button class="primary" type="submit">Sign In →</button>
+        <a class="secondary" href="{{ url_for('register') }}">Create Account</a>
+      </div>
+    </form>
+
+    <p class="muted small">Forgot password? <a href="{{ url_for('reset_unlock') }}">Reset</a></p>
+  </section>
+</div>
+
+<style>
+  .login-grid{display:grid;grid-template-columns:460px 1fr;gap:32px;align-items:center;align-content:center}
+  .brand-panel{background:linear-gradient(180deg,#172554 0%, #0f2a4a 100%);color:#fff;padding:48px;border-radius:12px;display:flex;align-items:center}
+  .brand-inner{max-width:320px;margin:0 auto}
+  .brand-icon{font-size:56px;margin-bottom:10px}
+  .brand-panel h3{margin:6px 0 8px 0;font-size:20px}
+  .subtitle{color:#93c5fd;margin-bottom:12px;font-weight:700}
+  .desc{color:#cbd5e1;margin-bottom:8px}
+  .tagline{margin-top:18px;color:#94a3b8;font-weight:600;font-size:12px}
+  .auth-card{padding:28px;border-radius:12px}
+  .auth-card .muted{color:#64748b;margin-top:-6px}
+  .auth-form label{display:block;margin-top:12px;font-weight:600}
+  .auth-form input{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(15,23,36,0.06);margin-top:6px}
+  .actions{display:flex;gap:12px;margin-top:18px;align-items:center}
+  .primary{background:#10b981;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;border:none}
+  .secondary{background:transparent;color:#2563EB;padding:10px 12px;border-radius:8px;border:1px solid rgba(37,99,235,0.12);text-decoration:none}
+  @media(max-width:880px){.login-grid{grid-template-columns:1fr;gap:18px;padding:12px}.brand-panel{padding:24px}.auth-card{padding:20px}}
+</style>
+
+{% endblock %}
