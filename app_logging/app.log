@@ -10039,3 +10039,8 @@ sqlite3.OperationalError: table return_requests has no column named quantity
 2026-09-24 02:24:14 - INFO - 127.0.0.1 - - [24/Sep/2026 02:24:14] "GET / HTTP/1.1" 302 -
 2026-09-24 02:24:14 - INFO - 127.0.0.1 - - [24/Sep/2026 02:24:14] "GET /login HTTP/1.1" 200 -
 2026-09-24 02:24:14 - INFO - 127.0.0.1 - - [24/Sep/2026 02:24:14] "GET /static/styles.css HTTP/1.1" 304 -
+2026-09-24 17:43:26 - INFO - Hardware inventory database initialized successfully.
+2026-09-24 17:43:27 - INFO - Campus Hardware Inventory application started (desktop).
+2026-09-24 17:43:59 - INFO - Account Created: username='kervein', role='USER'
+2026-09-24 17:44:02 - WARNING - Failed login attempt for username='kervein': Username and password cannot be empty.
+2026-09-24 17:44:07 - INFO - User Logged In: 'kervein'
