@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="login-grid">
+  <aside class="brand-panel">
+    <div class="brand-inner">
+      <div class="brand-icon">🎓</div>
+      <h3>CAMPUS HARDWARE</h3>
+      <p class="subtitle">INVENTORY MANAGEMENT SYSTEM</p>
+      <p class="desc">Track equipment, manage campus resources, and maintain reliable records.</p>
+      <div class="tagline">SECURE • ORGANIZED • ACCOUNTABLE</div>
+    </div>
+  </aside>
+
+  <section class="card auth-card">
+    <h2>Welcome back</h2>
+    <p class="muted">Sign in or create an account to continue.</p>
+    <form method="post" class="auth-form">
+      <label>Username</label>
+      <input name="username" required>
+
+      <label>Email</label>
+      <input name="email">
+
+      <label>Password</label>
+      <input name="password" type="password" required>
+
+      <label>Login As</label>
+      <div class="role-row">
+        <select name="role">
+          <option value="USER" selected>User</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button class="primary" type="submit">Sign In →</button>
+        <a class="secondary" href="{{ url_for('register') }}">Create Account</a>
+      </div>
+    </form>
+
+    <p class="muted small">Forgot password? <a href="{{ url_for('reset_unlock') }}">Reset</a></p>
+  </section>
+</div>
+
+{% endblock %}
