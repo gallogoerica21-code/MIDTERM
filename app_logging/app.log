@@ -10163,3 +10163,12 @@ sqlite3.OperationalError: table return_requests has no column named quantity
 2026-10-08 06:34:32 - WARNING - Failed login attempt for username='admin1': Username is not registered.
 2026-10-08 06:34:32 - INFO - 127.0.0.1 - - [08/Oct/2026 06:34:32] "POST /login HTTP/1.1" 200 -
 2026-10-08 06:34:32 - INFO - 127.0.0.1 - - [08/Oct/2026 06:34:32] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 06:36:49 - INFO - Hardware inventory database initialized successfully.
+2026-10-08 06:36:49 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-10-08 06:36:49 - INFO - [33mPress CTRL+C to quit[0m
+2026-10-08 06:36:56 - INFO - 127.0.0.1 - - [08/Oct/2026 06:36:56] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+2026-10-08 06:36:56 - INFO - 127.0.0.1 - - [08/Oct/2026 06:36:56] "GET /login HTTP/1.1" 200 -
+2026-10-08 06:36:57 - INFO - 127.0.0.1 - - [08/Oct/2026 06:36:57] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 06:36:58 - INFO - 127.0.0.1 - - [08/Oct/2026 06:36:58] "[32mGET /dashboard HTTP/1.1[0m" 302 -
+2026-10-08 06:36:58 - INFO - 127.0.0.1 - - [08/Oct/2026 06:36:58] "GET /login HTTP/1.1" 200 -
