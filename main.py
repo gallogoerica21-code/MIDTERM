@@ -6,7 +6,11 @@ import subprocess
 import webbrowser
 import time
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+if __name__ == "__main__":
+    os.chdir(PROJECT_ROOT)
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 
 from logger import logger
 from models.database import init_hardware_db
@@ -56,9 +60,9 @@ if __name__ == "__main__":
     if args.web:
         # Launch the Flask helper as a subprocess so it runs in the project's venv
         python_exe = sys.executable
-        run_script = os.path.join(os.path.dirname(__file__), "scripts", "run_flask.py")
+        run_script = os.path.join(PROJECT_ROOT, "scripts", "run_flask.py")
         logger.info("Starting web server using %s %s", python_exe, run_script)
-        proc = subprocess.Popen([python_exe, run_script], cwd=os.path.dirname(__file__))
+        proc = subprocess.Popen([python_exe, run_script], cwd=PROJECT_ROOT)
         # give server a moment to start then open browser
         time.sleep(0.8)
         try:
