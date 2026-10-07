@@ -1,10 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="grid">
-  <section class="card">
+<div class="grid admin-approvals-grid">
+  <section class="card admin-approval-card">
     <h2>Admin Approvals</h2>
 
-    <h3>Password Reset Requests</h3>
+    <h3 id="borrow-requests">Item Borrow Requests</h3>
+    {% if borrow_requests %}
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>Request</th><th>Requester</th><th>Item</th><th>Quantity</th><th>Due date</th><th>Requested</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for br in borrow_requests %}
+        <tr>
+          <td>#{{ br[0] }}</td>
+          <td>{{ br[1] }}<span class="inventory-item-id">Student ID {{ br[2] }}</span></td>
+          <td>{{ br[4] }}<span class="inventory-item-id">Item #{{ br[3] }}</span></td>
+          <td>{{ br[5] }}</td>
+          <td>{{ br[6] or 'Not specified' }}</td>
+          <td>{{ br[7] }}</td>
+          <td>
+            <div class="approval-actions">
+              <form method="post" action="{{ url_for('admin_approve_borrow', borrow_id=br[0]) }}">
+                <button type="submit" class="primary">Approve</button>
+              </form>
+              <form method="post" action="{{ url_for('admin_reject_borrow', borrow_id=br[0]) }}">
+                <button type="submit" class="secondary">Reject</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    {% else %}
+    <div class="empty-requests">
+      <strong>No item requests awaiting approval</strong>
+      <span>New user borrow requests will appear here.</span>
+    </div>
+    {% endif %}
+
+    <h3 id="password-reset-requests" class="admin-approval-subheading">Password Change Requests</h3>
+    {% if requests %}
+    <div class="table-scroll">
     <table>
       <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Status</th><th>Requested</th><th>Action</th></tr></thead>
       <tbody>
@@ -16,77 +54,70 @@
           <td>{{ r[3] }}</td>
           <td>{{ r[4] }}</td>
           <td>
-            <form method="post" action="{{ url_for('admin_review', request_id=r[0]) }}">
-              <button name="action" value="approve" class="primary">Approve</button>
-              <button name="action" value="reject" class="secondary">Reject</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <h3 style="margin-top:18px">Borrow Requests</h3>
-    <table>
-      <thead><tr><th>Borrow ID</th><th>Student</th><th>Item</th><th>Qty</th><th>Pay By</th><th>Status</th><th>Action</th></tr></thead>
-      <tbody>
-        {% for b in borrow_rows %}
-        <tr>
-          <td>{{ b[0] }}</td>
-          <td>{{ b[1] }}</td>
-          <td>{{ b[4] }} (ID {{ b[3] }})</td>
-          <td>{{ b[5] }}</td>
-          <td>{{ b[6] }}</td>
-          <td>{{ b[8] }}</td>
-          <td>
-            {% if b[8] == 'PENDING' %}
-              <form method="post" action="{{ url_for('admin_approve_borrow', borrow_id=b[0]) }}" style="display:inline">
-                <button type="submit" class="primary">Approve</button>
+            {% if r[3] == 'PENDING' %}
+            <div class="approval-actions">
+              <form method="post" action="{{ url_for('admin_review', request_id=r[0]) }}">
+                <button name="action" value="approve" class="primary">Approve</button>
+                <button name="action" value="reject" class="secondary">Reject</button>
               </form>
-              <form method="post" action="{{ url_for('admin_reject_borrow', borrow_id=b[0]) }}" style="display:inline">
-                <button type="submit" class="secondary">Reject</button>
-              </form>
+            </div>
             {% else %}
-              -
+              {{ r[3] }}
             {% endif %}
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    </div>
+    {% else %}
+    <div class="empty-requests">
+      <strong>No password change requests</strong>
+      <span>New account password requests will appear here for review.</span>
+    </div>
+    {% endif %}
+
   </section>
 
-  <aside class="card" style="height:fit-content">
-    <h3>Summary</h3>
-    <p><strong>Total Stocks</strong><div class="muted">{{ total_stocks }}</div></p>
-    <p><strong>Total Borrowed</strong><div class="muted">{{ total_borrowed }}</div></p>
-
-    <h3 style="margin-top:18px">Return Requests</h3>
-    <table>
-      <thead><tr><th>ID</th><th>Borrow ID</th><th>Qty</th><th>Requested</th><th>Action</th></tr></thead>
-      <tbody>
-        {% for rr in return_rows %}
-        <tr>
-          <td>{{ rr[0] }}</td>
-          <td>{{ rr[1] }}</td>
-          <td>{{ rr[2] }}</td>
-          <td>{{ rr[4] }}</td>
-          <td>
-            {% if rr[3] == 'PENDING' %}
-              <form method="post" action="{{ url_for('admin_approve_return', return_id=rr[0]) }}" style="display:inline">
-                <button type="submit" class="primary">Approve</button>
-              </form>
-              <form method="post" action="{{ url_for('admin_reject_return', return_id=rr[0]) }}" style="display:inline">
-                <button type="submit" class="secondary">Reject</button>
-              </form>
-            {% else %}
-              {{ rr[3] }}
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </aside>
+  <section class="card admin-return-requests">
+    <h3 id="return-requests">Return Requests</h3>
+    {% if return_rows %}
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Request ID</th><th>Borrow ID</th><th>Quantity</th><th>Status</th><th>Requested</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for rr in return_rows %}
+          <tr>
+            <td>#{{ rr[0] }}</td>
+            <td>#{{ rr[1] }}</td>
+            <td>{{ rr[2] }}</td>
+            <td><span class="approval-status status-{{ rr[3]|lower }}">{{ rr[3] }}</span></td>
+            <td>{{ rr[4] }}</td>
+            <td>
+              {% if rr[3] == 'PENDING' %}
+              <div class="approval-actions">
+                <form method="post" action="{{ url_for('admin_approve_return', return_id=rr[0]) }}">
+                  <button type="submit" class="primary">Approve</button>
+                </form>
+                <form method="post" action="{{ url_for('admin_reject_return', return_id=rr[0]) }}">
+                  <button type="submit" class="secondary">Reject</button>
+                </form>
+              </div>
+              {% else %}
+              <span class="muted">Reviewed</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-requests">
+      <strong>No return requests</strong>
+      <span>User return requests will appear here for approval.</span>
+    </div>
+    {% endif %}
+  </section>
 </div>
 {% endblock %}

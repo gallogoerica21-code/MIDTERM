@@ -58,6 +58,21 @@ def init_hardware_db(db_name="hardware_inventory.db"):
                 """
             )
 
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS return_requests (
+                    return_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    borrow_id INTEGER NOT NULL,
+                    quantity INTEGER NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'PENDING',
+                    requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    reviewed_at TEXT,
+                    reviewed_by TEXT,
+                    FOREIGN KEY (borrow_id) REFERENCES borrowed_items(borrow_id)
+                )
+                """
+            )
+
             # Migrate older users tables.
             cursor.execute("PRAGMA table_info(users)")
             cols = [row[1] for row in cursor.fetchall()]

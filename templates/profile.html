@@ -1,20 +1,49 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="card">
-  <h2>Profile</h2>
+<section class="card profile-card">
+  <header class="profile-heading">
+    <h2>Profile</h2>
+    <p class="muted">Manage your account details and password.</p>
+  </header>
   {% if profile %}
-    <p><strong>Username:</strong> {{ profile[0] }}</p>
-    <p><strong>Email:</strong> {{ profile[1] or 'Not provided' }}</p>
-    <p><strong>Role:</strong> {{ profile[2] }}</p>
-    <form method="post">
-      <label>Current password</label>
-      <input name="current_password" type="password" required>
-      <label>New password</label>
-      <input name="new_password" type="password" required>
-      <button type="submit">Change Password</button>
-    </form>
+    <dl class="profile-details">
+      <div class="profile-detail">
+        <dt>Username</dt>
+        <dd>{{ profile[0] }}</dd>
+      </div>
+      <div class="profile-detail">
+        <dt>Email</dt>
+        <dd>{{ profile[1] or 'Not provided' }}</dd>
+      </div>
+      <div class="profile-detail">
+        <dt>Account role</dt>
+        <dd><span class="profile-role">{{ profile[2] }}</span></dd>
+      </div>
+    </dl>
+
+    <section class="profile-password-section">
+      <div class="profile-section-heading">
+        <h3>Change password</h3>
+        <p class="muted">Enter your current password, then choose a new one.</p>
+      </div>
+      <form method="post" class="profile-password-form">
+        <div class="profile-password-fields">
+          <label>
+            Current password
+            <input name="current_password" type="password" autocomplete="current-password" required>
+          </label>
+          <label>
+            New password
+            <input name="new_password" type="password" autocomplete="new-password" required>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="submit">Change Password</button>
+        </div>
+      </form>
+    </section>
   {% else %}
-    <p>Profile not found.</p>
+    <p class="muted">Profile not found.</p>
   {% endif %}
 </section>
 {% endblock %}

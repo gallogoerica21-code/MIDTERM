@@ -126,10 +126,24 @@ def dashboard():
     items = hc.fetch_all_items(search=search, category=category)
     categories = ["All"] + hc.fetch_categories()
     is_admin = user.get("role") == "ADMIN"
-    total_stocks = sum(int(row[3]) for row in items) if is_admin else None
-    borrow_rows = hc.fetch_borrowed_items(
-        None if is_admin else user.get("username")
-    )
+    pending_password_reset_count = 0
+    pending_borrow_request_count = 0
+    if is_admin:
+        all_items = hc.fetch_all_items()
+        total_stocks = sum(int(row[3]) for row in all_items)
+        total_items = len(all_items)
+        auth = HardwareAuthController()
+        pending_password_reset_count = sum(
+            row[3] == "PENDING" for row in auth.get_reset_requests()
+        )
+        pending_borrow_requests = hc.fetch_pending_borrow_requests()
+        pending_borrow_request_count = len(pending_borrow_requests)
+        borrow_rows = []
+    else:
+        total_stocks = None
+        total_items = None
+        pending_borrow_requests = []
+        borrow_rows = hc.fetch_borrowed_items(user.get("username"))
 
     return render_template(
         "dashboard.html",
@@ -138,6 +152,9 @@ def dashboard():
         categories=categories,
         selected_category=category,
         total_stocks=total_stocks,
+        total_items=total_items,
+        pending_password_reset_count=pending_password_reset_count,
+        pending_borrow_request_count=pending_borrow_request_count,
         borrow_rows=borrow_rows,
     )
 
@@ -222,22 +239,14 @@ def admin_approvals():
 
     auth = HardwareAuthController()
     requests = auth.get_reset_requests()
-    borrow_rows = auth.get_borrow_requests()
     hc = HardwareController()
+    borrow_requests = hc.fetch_pending_borrow_requests()
     return_rows = hc.get_return_requests()
-
-    # Summary metrics for admin dashboard
-    hc = HardwareController()
-    items = hc.fetch_all_items()
-    total_stocks = sum(int(row[3]) for row in items)
-    total_borrowed = len([b for b in auth.get_borrow_requests() if b[8] == 'APPROVED'])
 
     return render_template(
         "admin.html",
         requests=requests,
-        borrow_rows=borrow_rows,
-        total_stocks=total_stocks,
-        total_borrowed=total_borrowed,
+        borrow_requests=borrow_requests,
         return_rows=return_rows,
     )
 
@@ -324,7 +333,7 @@ def add_item():
     hc = HardwareController()
     success, msg = hc.add_item(name, category, quantity, price)
     flash(msg, "success" if success else "danger")
-    return redirect(url_for("dashboard"))
+    return redirect(url_for("dashboard") + "#current-inventory")
 
 
 @app.route("/items/update/<int:item_id>", methods=["POST"])
@@ -340,7 +349,7 @@ def update_item(item_id):
     hc = HardwareController()
     success, msg = hc.update_item(item_id, name, category, quantity, price)
     flash(msg, "success" if success else "danger")
-    return redirect(url_for("dashboard"))
+    return redirect(url_for("dashboard") + "#current-inventory")
 
 
 @app.route("/items/delete/<int:item_id>", methods=["POST"])
@@ -352,7 +361,7 @@ def delete_item(item_id):
     hc = HardwareController()
     success, msg = hc.delete_item(item_id)
     flash(msg, "success" if success else "danger")
-    return redirect(url_for("dashboard"))
+    return redirect(url_for("dashboard") + "#current-inventory")
 
 
 @app.route("/borrow/history")

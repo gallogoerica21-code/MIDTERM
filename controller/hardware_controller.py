@@ -411,13 +411,18 @@ class HardwareController:
         with self._connect() as conn:
             cols = [r[1] for r in conn.execute("PRAGMA table_info(return_requests)").fetchall()]
             qty_col = "quantity" if "quantity" in cols else ("return_quantity" if "return_quantity" in cols else None)
-            select_cols = ["r.return_id", "r.borrow_id"]
-            if "item_id" in cols:
-                select_cols.append("r.item_id")
-            # include quantity column using whichever exists and alias to quantity
-            if qty_col:
-                select_cols.append(f"r.{qty_col} as quantity")
-            select_cols += ["r.requested_at", "r.status", "r.reviewed_at", "r.reviewed_by"]
+            if not qty_col:
+                raise sqlite3.OperationalError("Return request quantity column is missing.")
+
+            select_cols = [
+                "r.return_id",
+                "r.borrow_id",
+                f"r.{qty_col} AS quantity",
+                "r.status",
+                "r.requested_at",
+                "r.reviewed_at",
+                "r.reviewed_by",
+            ]
 
             query = f"SELECT {', '.join(select_cols)} FROM return_requests r"
             params = ()
