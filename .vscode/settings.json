@@ -3,5 +3,6 @@
         "{**/.c4z/.extsrcs/*.PROTSYM.cbl,**/.c4z/.extsrcs/*.PROTSYM.listing}": true
     },
     "python.analysis.extraPaths": ["."],
-    "python.terminal.executeInFileDir": true
+    "python.terminal.executeInFileDir": true,
+    "git.postCommitCommand": "push"
 }
