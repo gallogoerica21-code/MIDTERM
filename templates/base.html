@@ -6,7 +6,7 @@
     <title>Campus Hardware Inventory</title>
     <link rel="stylesheet" href="/static/styles.css">
   </head>
-  <body>
+  <body{% if live_revision is defined %} data-live-revision="{{ live_revision }}" data-live-revision-url="{{ url_for('live_revision') }}"{% endif %}>
     <header class="site-header">
       <div class="site-header-inner">
         <h1><a href="{{ url_for('index') }}">Campus Hardware Inventory</a></h1>
@@ -43,5 +43,8 @@
     <footer>
       <p>Converted Flask UI — uses existing controllers and database.</p>
     </footer>
+    {% if live_revision is defined %}
+    <script src="{{ url_for('static', filename='live_updates.js') }}" defer></script>
+    {% endif %}
   </body>
 </html>

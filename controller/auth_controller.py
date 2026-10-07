@@ -4,6 +4,7 @@ import sqlite3
 from datetime import datetime
 
 from logger import logger
+from models.database import connect_db
 from models.schemas import UserRegisterSchema
 from pydantic import ValidationError
 
@@ -71,7 +72,7 @@ class AuthController:
             return False, "Role must be USER or ADMIN."
 
         try:
-            with sqlite3.connect(self.db_name) as conn:
+            with connect_db(self.db_name) as conn:
                 conn.execute(
                     """
                     INSERT INTO users
@@ -110,7 +111,7 @@ class AuthController:
             return False, "Username and password cannot be empty."
 
         try:
-            with sqlite3.connect(self.db_name) as conn:
+            with connect_db(self.db_name) as conn:
                 row = conn.execute(
                     """
                     SELECT id, password_hash, role, failed_attempts, locked
@@ -165,7 +166,7 @@ class AuthController:
             return False, "Unable to access the database."
 
     def get_profile(self, username):
-        with sqlite3.connect(self.db_name) as conn:
+        with connect_db(self.db_name) as conn:
             return conn.execute(
                 """
                 SELECT username, email, role, locked
@@ -181,7 +182,7 @@ class AuthController:
         if not profile:
             return False, "User account not found."
 
-        with sqlite3.connect(self.db_name) as conn:
+        with connect_db(self.db_name) as conn:
             stored = conn.execute(
                 "SELECT password_hash FROM users WHERE username = ?",
                 (username,),
@@ -202,7 +203,7 @@ class AuthController:
                 "uppercase, number, and special character."
             )
 
-        with sqlite3.connect(self.db_name) as conn:
+        with connect_db(self.db_name) as conn:
             conn.execute(
                 "UPDATE users SET password_hash = ? WHERE username = ?",
                 (self._hash_password(validated.password), username),
@@ -221,7 +222,7 @@ class AuthController:
         except ValidationError:
             return False, "Enter a valid email and a strong new password."
 
-        with sqlite3.connect(self.db_name) as conn:
+        with connect_db(self.db_name) as conn:
             row = conn.execute(
                 "SELECT id, username FROM users WHERE email = ?",
                 (email,),
@@ -262,11 +263,11 @@ class AuthController:
 
         query += " ORDER BY r.request_id DESC"
 
-        with sqlite3.connect(self.db_name) as conn:
+        with connect_db(self.db_name) as conn:
             return conn.execute(query, params).fetchall()
 
     def review_reset_request(self, request_id, admin_username, approve):
-        with sqlite3.connect(self.db_name) as conn:
+        with connect_db(self.db_name) as conn:
             row = conn.execute(
                 """
                 SELECT user_id, requested_password_hash, status
@@ -318,7 +319,7 @@ class AuthController:
         return True, f"Password reset request {status.lower()}."
 
     def get_borrow_requests(self):
-        with sqlite3.connect(self.db_name) as conn:
+        with connect_db(self.db_name) as conn:
             return conn.execute(
                 """
                 SELECT b.borrow_id,
@@ -338,7 +339,7 @@ class AuthController:
             ).fetchall()
 
     def approve_borrow_request(self, borrow_id, admin_username):
-        with sqlite3.connect(self.db_name) as conn:
+        with connect_db(self.db_name) as conn:
             request = conn.execute(
                 """
                 SELECT item_id, quantity, status
@@ -393,7 +394,7 @@ class AuthController:
         return True, "Borrow request approved and stock updated."
 
     def reject_borrow_request(self, borrow_id, admin_username):
-        with sqlite3.connect(self.db_name) as conn:
+        with connect_db(self.db_name) as conn:
             request = conn.execute(
                 "SELECT status FROM borrowed_items WHERE borrow_id = ?",
                 (borrow_id,),

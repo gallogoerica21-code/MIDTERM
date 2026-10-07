@@ -85,8 +85,9 @@ The professional interface includes:
 - Login lockout after three failed attempts
 - Password hashing with PBKDF2-HMAC-SHA256
 - SQLite database
+- Supabase PostgreSQL support for shared web-app data
 - Application logging
-- Automatic dashboard refresh
+- Dashboard and approval pages refresh when shared data changes (checked every 5 seconds)
 
 ## Role access
 
@@ -96,6 +97,17 @@ The professional interface includes:
 - Borrow records created before account ownership tracking was added remain visible to administrators only.
 
 Set `FLASK_SECRET_KEY` to a persistent random value if login sessions should survive web-server restarts. Without it, a fresh random session key is generated when the server starts.
+
+## Supabase setup
+
+The Flask app can use a shared Supabase PostgreSQL database. **If a database password has been shared in chat, reset it in Supabase before connecting.** Never commit or share the connection string.
+
+1. Install the project dependencies with `pip install -r requirements.txt`.
+2. Copy `.env.example` to `.env` and set `SUPABASE_DB_URL` using the newly reset password. URL-encode any reserved characters in the password. `.env` is ignored by Git.
+3. To copy the existing local SQLite users, inventory, borrow/return requests, and password-reset requests, run `python -m scripts.migrate_sqlite_to_supabase`. The migration stops if any destination table already contains data.
+4. Run the Flask app with `python web_app.py`. When `SUPABASE_DB_URL` is set, the web app and controllers use Supabase; without it, they continue to use the local SQLite database.
+
+The dashboard and admin approvals page check for shared database changes every five seconds and reload when displayed data changes. This is near-real-time polling, not a Supabase Realtime WebSocket subscription.
 
 ## Deliverables created by this conversion
 

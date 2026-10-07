@@ -5,6 +5,7 @@ from datetime import datetime
 from pydantic import ValidationError
 
 from logger import logger
+from models.database import connect_db
 from models.schemas import BorrowedItemSchema
 
 
@@ -13,7 +14,7 @@ class HardwareController:
         self.db_name = db_name
 
     def _connect(self):
-        return sqlite3.connect(self.db_name)
+        return connect_db(self.db_name)
 
     @staticmethod
     def _status_from_quantity(quantity: int) -> str:
@@ -347,58 +348,20 @@ class HardwareController:
                 if not borrow:
                     return False, "Borrow record not found."
 
-                _, item_id, borrowed_qty, status = borrow
+                _, _, borrowed_qty, status = borrow
                 if status != "APPROVED":
                     return False, "Only approved borrows can be returned."
 
                 if quantity > borrowed_qty:
                     return False, "Return quantity cannot exceed borrowed quantity."
 
-                # Ensure return_requests table exists and has expected columns
                 conn.execute(
                     """
-                    CREATE TABLE IF NOT EXISTS return_requests (
-                        return_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        borrow_id INTEGER NOT NULL,
-                        quantity INTEGER NOT NULL,
-                        status TEXT NOT NULL DEFAULT 'PENDING',
-                        requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        reviewed_at TEXT,
-                        reviewed_by TEXT,
-                        FOREIGN KEY(borrow_id) REFERENCES borrowed_items(borrow_id)
-                    )
-                    """
+                    INSERT INTO return_requests (borrow_id, quantity, status)
+                    VALUES (?, ?, 'PENDING')
+                    """,
+                    (borrow_id, quantity),
                 )
-
-                # Ensure schema variations are handled (some DBs use return_quantity)
-                cols = [r[1] for r in conn.execute("PRAGMA table_info(return_requests)").fetchall()]
-                if "item_id" not in cols:
-                    try:
-                        conn.execute("ALTER TABLE return_requests ADD COLUMN item_id INTEGER")
-                        cols.append("item_id")
-                    except sqlite3.Error:
-                        pass
-
-                # support both 'quantity' and 'return_quantity' column names
-                qty_col = "quantity" if "quantity" in cols else ("return_quantity" if "return_quantity" in cols else None)
-                if qty_col is None:
-                    # create a compatible column name if nothing present
-                    try:
-                        conn.execute("ALTER TABLE return_requests ADD COLUMN quantity INTEGER DEFAULT 0")
-                        qty_col = "quantity"
-                        cols.append("quantity")
-                    except sqlite3.Error:
-                        return False, "Return requests schema incompatible."
-
-                insert_cols = ["borrow_id", qty_col]
-                insert_vals = [borrow_id, quantity]
-                if "item_id" in cols:
-                    insert_cols.insert(1, "item_id")
-                    insert_vals.insert(1, item_id)
-
-                placeholders = ",".join(["?" for _ in insert_cols])
-                col_list = ",".join(insert_cols)
-                conn.execute(f"INSERT INTO return_requests ({col_list}, status) VALUES ({placeholders}, 'PENDING')", tuple(insert_vals))
 
             logger.info("Return requested: borrow_id=%s qty=%s", borrow_id, quantity)
             return True, "Return request submitted for admin approval."
@@ -409,15 +372,10 @@ class HardwareController:
 
     def get_return_requests(self, status=None):
         with self._connect() as conn:
-            cols = [r[1] for r in conn.execute("PRAGMA table_info(return_requests)").fetchall()]
-            qty_col = "quantity" if "quantity" in cols else ("return_quantity" if "return_quantity" in cols else None)
-            if not qty_col:
-                raise sqlite3.OperationalError("Return request quantity column is missing.")
-
             select_cols = [
                 "r.return_id",
                 "r.borrow_id",
-                f"r.{qty_col} AS quantity",
+                "r.quantity",
                 "r.status",
                 "r.requested_at",
                 "r.reviewed_at",
@@ -436,27 +394,25 @@ class HardwareController:
     def review_return_request(self, return_id, admin_username, approve: bool):
         try:
             with self._connect() as conn:
-                cols = [r[1] for r in conn.execute("PRAGMA table_info(return_requests)").fetchall()]
-                qty_col = "quantity" if "quantity" in cols else ("return_quantity" if "return_quantity" in cols else None)
-                if qty_col is None:
-                    return False, "Return request schema invalid."
-
-                select_clause = f"borrow_id, {qty_col} as qty, status"
-                if "item_id" in cols:
-                    select_clause = f"borrow_id, item_id, {qty_col} as qty, status"
-
-                row = conn.execute(f"SELECT {select_clause} FROM return_requests WHERE return_id = ?", (return_id,)).fetchone()
+                row = conn.execute(
+                    """
+                    SELECT borrow_id, quantity, status
+                    FROM return_requests
+                    WHERE return_id = ?
+                    """,
+                    (return_id,),
+                ).fetchone()
                 if not row:
                     return False, "Return request not found."
 
-                if "item_id" in cols:
-                    borrow_id, item_id, qty, status = row
-                else:
-                    borrow_id, qty, status = row
-                    b = conn.execute("SELECT item_id FROM borrowed_items WHERE borrow_id = ?", (borrow_id,)).fetchone()
-                    if not b:
-                        return False, "Related borrow record not found."
-                    item_id = b[0]
+                borrow_id, qty, status = row
+                borrow = conn.execute(
+                    "SELECT item_id FROM borrowed_items WHERE borrow_id = ?",
+                    (borrow_id,),
+                ).fetchone()
+                if not borrow:
+                    return False, "Related borrow record not found."
+                item_id = borrow[0]
 
                 if status != "PENDING":
                     return False, "Return request is no longer pending."

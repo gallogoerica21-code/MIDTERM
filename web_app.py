@@ -13,6 +13,8 @@ from controller.hardware_controller import HardwareController
 from models.database import init_hardware_db
 import io
 import csv
+import hashlib
+import json
 import os
 import secrets
 import shutil
@@ -24,7 +26,7 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY") or secrets.token_hex(32)
 # Initialize the database at import time (compatible with Flask 3)
 db_name = "hardware_inventory.db"
 init_hardware_db(db_name=db_name)
-if os.path.exists(db_name):
+if not os.environ.get("SUPABASE_DB_URL") and os.path.exists(db_name):
     bak = f"{db_name}.bak"
     try:
         shutil.copyfile(db_name, bak)
@@ -156,7 +158,43 @@ def dashboard():
         pending_password_reset_count=pending_password_reset_count,
         pending_borrow_request_count=pending_borrow_request_count,
         borrow_rows=borrow_rows,
+        live_revision=get_live_revision(user),
     )
+
+
+def get_live_revision(user):
+    """Return a user-scoped fingerprint for data displayed on live pages."""
+    hc = HardwareController()
+    is_admin = user.get("role") == "ADMIN"
+    payload = {
+        "items": hc.fetch_all_items(),
+        "borrows": hc.fetch_borrowed_items(
+            None if is_admin else user.get("username")
+        ),
+    }
+    if is_admin:
+        auth = HardwareAuthController()
+        payload["borrow_requests"] = hc.fetch_pending_borrow_requests()
+        payload["return_requests"] = hc.get_return_requests()
+        payload["reset_requests"] = auth.get_reset_requests()
+
+    serialized = json.dumps(payload, default=str, separators=(",", ":"))
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+@app.route("/api/live-revision")
+def live_revision():
+    user = current_user()
+    if not user:
+        return {"error": "Authentication required."}, 401
+
+    response = app.response_class(
+        response=json.dumps({"revision": get_live_revision(user)}),
+        status=200,
+        mimetype="application/json",
+    )
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @app.route("/borrow", methods=["POST"])
@@ -248,6 +286,7 @@ def admin_approvals():
         requests=requests,
         borrow_requests=borrow_requests,
         return_rows=return_rows,
+        live_revision=get_live_revision(user),
     )
 
 
