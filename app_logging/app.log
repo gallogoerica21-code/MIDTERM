@@ -10588,3 +10588,42 @@ sqlite3.OperationalError: table return_requests has no column named quantity
 2026-10-08 07:46:29 - INFO - 127.0.0.1 - - [08/Oct/2026 07:46:29] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
 2026-10-08 07:46:29 - INFO - 127.0.0.1 - - [08/Oct/2026 07:46:29] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
 2026-10-08 07:46:31 - INFO - Hardware inventory database initialized successfully.
+2026-10-08 07:55:21 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:21] "GET /admin/approvals HTTP/1.1" 200 -
+2026-10-08 07:55:21 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:21] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:55:23 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:23] "[32mGET /logout HTTP/1.1[0m" 302 -
+2026-10-08 07:55:23 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:23] "GET /login HTTP/1.1" 200 -
+2026-10-08 07:55:23 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:23] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:55:26 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:26] "GET /login HTTP/1.1" 200 -
+2026-10-08 07:55:26 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:26] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:55:26 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:26] "GET /login HTTP/1.1" 200 -
+2026-10-08 07:55:26 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:26] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:55:27 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:27] "GET /login HTTP/1.1" 200 -
+2026-10-08 07:55:27 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:27] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:55:27 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:27] "GET /login HTTP/1.1" 200 -
+2026-10-08 07:55:27 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:27] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:55:31 - WARNING - Failed login attempt for username='admin1': Username is not registered.
+2026-10-08 07:55:31 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:31] "POST /login HTTP/1.1" 200 -
+2026-10-08 07:55:31 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:31] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:55:33 - WARNING - Failed login attempt for username='admin1': Username is not registered.
+2026-10-08 07:55:33 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:33] "POST /login HTTP/1.1" 200 -
+2026-10-08 07:55:33 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:33] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:55:49 - INFO - User Logged In: 'admin21'
+2026-10-08 07:55:49 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:49] "POST /login HTTP/1.1" 200 -
+2026-10-08 07:55:49 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:49] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:55:50 - WARNING - Failed login attempt for username='admin1': Username is not registered.
+2026-10-08 07:55:50 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:50] "POST /login HTTP/1.1" 200 -
+2026-10-08 07:55:50 - INFO - 127.0.0.1 - - [08/Oct/2026 07:55:50] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:56:04 - INFO - User Logged In: 'admin21'
+2026-10-08 07:56:04 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:04] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-10-08 07:56:04 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:04] "GET /dashboard HTTP/1.1" 200 -
+2026-10-08 07:56:04 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:04] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:56:07 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:07] "GET /export HTTP/1.1" 200 -
+2026-10-08 07:56:09 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:09] "GET /admin/approvals HTTP/1.1" 200 -
+2026-10-08 07:56:09 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:09] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:56:09 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:09] "GET /profile HTTP/1.1" 200 -
+2026-10-08 07:56:09 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:09] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:56:10 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:10] "GET /dashboard HTTP/1.1" 200 -
+2026-10-08 07:56:10 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:10] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
+2026-10-08 07:56:10 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:10] "[32mGET /logout HTTP/1.1[0m" 302 -
+2026-10-08 07:56:10 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:10] "GET /login HTTP/1.1" 200 -
+2026-10-08 07:56:10 - INFO - 127.0.0.1 - - [08/Oct/2026 07:56:10] "[36mGET /static/styles.css HTTP/1.1[0m" 304 -
