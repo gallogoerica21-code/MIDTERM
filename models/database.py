@@ -253,7 +253,7 @@ def init_postgres_hardware_db(database_url):
                     student_id TEXT NOT NULL,
                     item_id BIGINT NOT NULL REFERENCES hardware(item_id),
                     quantity INTEGER NOT NULL,
-                    repayment_due_date TEXT NOT NULL,
+                    repayment_due_date TEXT,
                     status TEXT NOT NULL DEFAULT 'PENDING',
                     borrowed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     requested_by TEXT,
@@ -289,6 +289,12 @@ def init_postgres_hardware_db(database_url):
             )
             for statement in statements:
                 conn.execute(statement)
+            conn.execute(
+                """
+                ALTER TABLE borrowed_items
+                ALTER COLUMN repayment_due_date DROP NOT NULL
+                """
+            )
             conn.execute(
                 "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email)"
             )
