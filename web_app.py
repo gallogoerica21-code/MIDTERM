@@ -623,3 +623,7 @@ def run_flask(debug: bool = False, host: str = "127.0.0.1", port: int = 5000):
 @app.route('/_ping')
 def _ping():
     return 'ok', 200
+
+
+if __name__ == "__main__":
+    run_flask(debug=False, host="127.0.0.1", port=5000)

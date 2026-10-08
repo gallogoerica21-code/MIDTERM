@@ -10667,3 +10667,39 @@ psycopg.OperationalError: failed to resolve host 'db.vktphlhewpxgbndjjkux.supaba
 2026-10-08 08:24:37 - INFO - 127.0.0.1 - - [08/Oct/2026 08:24:37] "GET /login HTTP/1.1" 200 -
 2026-10-08 08:25:30 - INFO - Supabase PostgreSQL database initialized successfully.
 2026-10-08 08:57:08 - INFO - Supabase PostgreSQL database initialized successfully.
+2026-10-08 17:23:43 - INFO - Supabase PostgreSQL database initialized successfully.
+2026-10-08 17:23:43 - WARNING - Failed registration attempt: username='admin', email='admin@example.com' - Password must include at least one special character from @#$%^&*.
+2026-10-08 17:23:43 - WARNING - Failed registration attempt: username='student1', email='stud@example.com' - Password must include at least one special character from @#$%^&*.
+2026-10-08 17:23:46 - INFO - Borrow request created pending admin approval: student=Student One, student_id=S001, item_id=1, quantity=3, pay_by=2026-10-15
+2026-10-08 17:23:48 - INFO - Borrow request approved: borrow_id=15 by=admin
+2026-10-08 17:23:50 - INFO - Return requested: borrow_id=15 qty=3
+2026-10-08 17:23:52 - INFO - Return request 5 APPROVED by admin
+2026-10-08 17:24:49 - INFO - Supabase PostgreSQL database initialized successfully.
+2026-10-08 17:26:28 - INFO - Supabase PostgreSQL database initialized successfully.
+2026-10-08 17:26:28 - INFO - WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+2026-10-08 17:26:28 - INFO - Press CTRL+C to quit
+2026-10-08 17:27:26 - INFO - 127.0.0.1 - - [08/Oct/2026 17:27:26] "GET /_ping HTTP/1.1" 200 -
+2026-10-08 17:30:40 - INFO - 127.0.0.1 - - [08/Oct/2026 17:30:40] "GET / HTTP/1.1" 302 -
+2026-10-08 17:30:40 - INFO - 127.0.0.1 - - [08/Oct/2026 17:30:40] "GET /login HTTP/1.1" 200 -
+2026-10-08 17:30:41 - INFO - 127.0.0.1 - - [08/Oct/2026 17:30:41] "GET /static/styles.css HTTP/1.1" 200 -
+2026-10-08 17:30:41 - INFO - 127.0.0.1 - - [08/Oct/2026 17:30:41] "GET /favicon.ico HTTP/1.1" 404 -
+2026-10-08 17:30:56 - WARNING - Failed login attempt for username='admin21': Invalid password. 2 attempt(s) remaining before lockout.
+2026-10-08 17:30:56 - INFO - 127.0.0.1 - - [08/Oct/2026 17:30:56] "POST /login HTTP/1.1" 200 -
+2026-10-08 17:30:56 - INFO - 127.0.0.1 - - [08/Oct/2026 17:30:56] "GET /static/styles.css HTTP/1.1" 304 -
+2026-10-08 17:31:14 - INFO - User Logged In: 'admin21'
+2026-10-08 17:31:14 - INFO - 127.0.0.1 - - [08/Oct/2026 17:31:14] "POST /login HTTP/1.1" 200 -
+2026-10-08 17:31:14 - INFO - 127.0.0.1 - - [08/Oct/2026 17:31:14] "GET /static/styles.css HTTP/1.1" 304 -
+2026-10-08 17:31:29 - INFO - User Logged In: 'admin21'
+2026-10-08 17:31:29 - INFO - 127.0.0.1 - - [08/Oct/2026 17:31:29] "POST /login HTTP/1.1" 302 -
+2026-10-08 17:31:38 - INFO - 127.0.0.1 - - [08/Oct/2026 17:31:38] "GET /dashboard HTTP/1.1" 200 -
+2026-10-08 17:31:38 - INFO - 127.0.0.1 - - [08/Oct/2026 17:31:38] "GET /static/live_updates.js HTTP/1.1" 200 -
+2026-10-08 17:31:38 - INFO - 127.0.0.1 - - [08/Oct/2026 17:31:38] "GET /static/styles.css HTTP/1.1" 304 -
+2026-10-08 17:44:38 - INFO - Supabase PostgreSQL database initialized successfully.
+2026-10-08 17:44:38 - INFO - WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+2026-10-08 17:44:38 - INFO - Press CTRL+C to quit
+2026-10-08 17:48:57 - INFO - Supabase PostgreSQL database initialized successfully.
+2026-10-08 17:48:57 - INFO - WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+2026-10-08 17:48:57 - INFO - Press CTRL+C to quit
