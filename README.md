@@ -111,7 +111,9 @@ The dashboard and admin approvals page check for shared database changes every f
 
 ## Deploy to Render
 
-This repository includes a Render Blueprint (`render.yaml`) for the Flask web app. In Render, create a new Blueprint and select this GitHub repository and the `master` branch. Before deploying, set the `SUPABASE_DB_URL` secret environment variable on the Render service to the Supabase Session pooler URL; do not commit `.env` or paste database credentials into chat. The Blueprint generates a persistent `FLASK_SECRET_KEY`, installs `requirements.txt`, starts Gunicorn on Render's assigned port, and uses `/_ping` as its health check. Automatic deploys are enabled for new commits to `master`.
+This repository includes a Render Blueprint (`render.yaml`) for the Flask web app, explicitly configured for Render's **Free** web-service plan. In Render, create a new Blueprint and select this GitHub repository and the `master` branch. Before deploying, set the `SUPABASE_DB_URL` secret environment variable on the Render service to the Supabase Session pooler URL; do not commit `.env` or paste database credentials into chat. The Blueprint generates a persistent `FLASK_SECRET_KEY`, installs `requirements.txt`, starts Gunicorn on Render's assigned port, and uses `/_ping` as its health check. Automatic deploys are enabled for new commits to `master`.
+
+Render Free web services may spin down after 15 minutes without traffic and have an ephemeral filesystem; this app uses Supabase for persistent shared data rather than relying on files stored by the web service. Free service usage limits and availability are controlled by Render.
 
 ## Deliverables created by this conversion
 
