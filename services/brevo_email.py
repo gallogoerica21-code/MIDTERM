@@ -27,7 +27,10 @@ def send_password_reset_notification(email):
             "Missing Brevo settings: " + ", ".join(missing_settings)
         )
 
-    payload = {
+    _send_email(
+        api_key,
+        sender_email,
+        {
         "sender": {
             "email": sender_email,
             "name": os.environ.get(
@@ -41,7 +44,49 @@ def send_password_reset_notification(email):
             f"the account registered to {email}.\n\n"
             "Review this request in the application's admin approvals page."
         ),
-    }
+        },
+    )
+
+
+def send_registration_otp(email, code):
+    api_key = os.environ.get("BREVO_API_KEY")
+    sender_email = os.environ.get("BREVO_SENDER_EMAIL")
+
+    missing_settings = [
+        name
+        for name, value in (
+            ("BREVO_API_KEY", api_key),
+            ("BREVO_SENDER_EMAIL", sender_email),
+        )
+        if not value
+    ]
+    if missing_settings:
+        raise BrevoEmailError(
+            "Missing Brevo settings: " + ", ".join(missing_settings)
+        )
+
+    _send_email(
+        api_key,
+        sender_email,
+        {
+            "sender": {
+                "email": sender_email,
+                "name": os.environ.get(
+                    "BREVO_SENDER_NAME", "Campus Hardware Inventory"
+                ),
+            },
+            "to": [{"email": email}],
+            "subject": "Your account verification code",
+            "textContent": (
+                f"Your Campus Hardware Inventory account verification code is "
+                f"{code}.\n\nThis code expires in 10 minutes. If you did not "
+                "request this code, you can ignore this email."
+            ),
+        },
+    )
+
+
+def _send_email(api_key, sender_email, payload):
     brevo_request = Request(
         "https://api.brevo.com/v3/smtp/email",
         data=json.dumps(payload).encode("utf-8"),

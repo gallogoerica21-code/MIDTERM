@@ -10,16 +10,24 @@ from flask import (
 )
 from controller.tracker_controller import HardwareAuthController
 from controller.hardware_controller import HardwareController
-from models.database import init_hardware_db
+from models.database import connect_db, init_hardware_db
+from models.schemas import SignupIdentitySchema
 from logger import logger
-from services.brevo_email import BrevoEmailError, send_password_reset_notification
+from services.brevo_email import (
+    BrevoEmailError,
+    send_password_reset_notification,
+    send_registration_otp,
+)
 import io
 import csv
 import hashlib
+import hmac
 import json
 import os
 import secrets
 import shutil
+import time
+from pydantic import ValidationError
 
 
 app = Flask(__name__)
@@ -71,23 +79,159 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    auth = HardwareAuthController()
+    pending = session.get("pending_registration")
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         email = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
-        confirm = request.form.get("confirm_password", "")
 
-        if password != confirm:
-            flash("Passwords do not match.", "danger")
+        try:
+            identity = SignupIdentitySchema(username=username, email=email)
+        except ValidationError as exc:
+            flash(exc.errors()[0]["msg"], "danger")
             return render_template("register.html")
 
-        success, msg = auth.register(username, password, email=email, role="USER")
-        flash(msg, "success" if success else "danger")
-        if success:
-            return redirect(url_for("login"))
+        with connect_db(db_name) as conn:
+            existing_username = conn.execute(
+                "SELECT 1 FROM users WHERE username = ?",
+                (identity.username,),
+            ).fetchone()
+            existing_email = conn.execute(
+                "SELECT 1 FROM users WHERE lower(email) = lower(?)",
+                (identity.email,),
+            ).fetchone()
+        if existing_username or existing_email:
+            flash(
+                "Username already exists."
+                if existing_username
+                else "Email already registered.",
+                "danger",
+            )
+            return render_template(
+                "register.html", username=username, email=email
+            )
 
-    return render_template("register.html")
+        if (
+            pending
+            and pending.get("username") == identity.username
+            and pending.get("email", "").lower() == identity.email.lower()
+            and int(time.time()) <= pending.get("expires_at", 0)
+            and int(time.time()) - pending.get("sent_at", 0) < 60
+        ):
+            flash("Please wait before requesting another verification code.", "info")
+            return render_template(
+                "register.html",
+                otp_sent=True,
+                username=identity.username,
+                email=identity.email,
+            )
+
+        code = f"{secrets.randbelow(1_000_000):06d}"
+        pending = {
+            "username": identity.username,
+            "email": identity.email,
+            "code_digest": _registration_otp_digest(identity.email, code),
+            "expires_at": int(time.time()) + 600,
+            "sent_at": int(time.time()),
+            "attempts": 0,
+            "verified": False,
+        }
+        try:
+            send_registration_otp(identity.email, code)
+        except BrevoEmailError as exc:
+            logger.error("Brevo registration OTP delivery failed: %s", exc)
+            flash(
+                "We could not send a verification code. Please try again later.",
+                "danger",
+            )
+            return render_template("register.html", username=username, email=email)
+
+        session["pending_registration"] = pending
+        flash("A verification code was sent to your email address.", "success")
+        return render_template(
+            "register.html",
+            otp_sent=True,
+            username=identity.username,
+            email=identity.email,
+        )
+
+    return render_template(
+        "register.html",
+        otp_sent=bool(pending),
+        username=pending.get("username", "") if pending else "",
+        email=pending.get("email", "") if pending else "",
+    )
+
+
+@app.route("/register/verify", methods=["POST"])
+def verify_registration():
+    pending = session.get("pending_registration")
+    if not pending:
+        flash("Start account creation to receive a verification code.", "danger")
+        return redirect(url_for("register"))
+
+    if int(time.time()) > pending["expires_at"]:
+        session.pop("pending_registration", None)
+        flash("Your verification code expired. Request a new one.", "danger")
+        return redirect(url_for("register"))
+
+    code = request.form.get("otp", "").strip()
+    if not pending.get("verified"):
+        if pending["attempts"] >= 5:
+            session.pop("pending_registration", None)
+            flash("Too many incorrect codes. Request a new verification code.", "danger")
+            return redirect(url_for("register"))
+
+        expected = pending["code_digest"]
+        supplied = _registration_otp_digest(pending["email"], code)
+        if not hmac.compare_digest(expected, supplied):
+            pending["attempts"] += 1
+            session["pending_registration"] = pending
+            flash("Incorrect verification code.", "danger")
+            return render_template(
+                "register.html",
+                otp_sent=True,
+                username=pending["username"],
+                email=pending["email"],
+            )
+        pending["verified"] = True
+
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm_password", "")
+    if password != confirm:
+        session["pending_registration"] = pending
+        flash("Passwords do not match.", "danger")
+        return render_template(
+            "register.html",
+            otp_sent=True,
+            username=pending["username"],
+            email=pending["email"],
+        )
+
+    auth = HardwareAuthController()
+    success, msg = auth.register(
+        pending["username"], password, email=pending["email"], role="USER"
+    )
+    if success:
+        session.pop("pending_registration", None)
+        flash("Email verified. " + msg, "success")
+        return redirect(url_for("login"))
+
+    session["pending_registration"] = pending
+    flash(msg, "danger")
+    return render_template(
+        "register.html",
+        otp_sent=True,
+        username=pending["username"],
+        email=pending["email"],
+    )
+
+
+def _registration_otp_digest(email, code):
+    return hmac.new(
+        app.secret_key.encode("utf-8"),
+        f"{email.lower()}:{code}".encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
 
 
 @app.route("/reset", methods=["GET", "POST"])

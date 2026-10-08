@@ -40,6 +40,27 @@ class UserRegisterSchema(pydantic.BaseModel):
         return value
 
 
+class SignupIdentitySchema(pydantic.BaseModel):
+    username: str = pydantic.Field(..., min_length=3, max_length=20)
+    email: str
+
+    @pydantic.field_validator("username")
+    @classmethod
+    def username_alphanumeric(cls, value):
+        if not re.match(r"^[a-zA-Z0-9_]+$", value):
+            raise ValueError(
+                "Username must contain only letters, numbers, and underscores"
+            )
+        return value
+
+    @pydantic.field_validator("email")
+    @classmethod
+    def email_valid(cls, value):
+        if not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", value):
+            raise ValueError("Invalid email address.")
+        return value
+
+
 class BorrowedItemSchema(pydantic.BaseModel):
     student_name: str = pydantic.Field(..., min_length=2, max_length=100)
     student_id: str = pydantic.Field(..., min_length=3, max_length=30)

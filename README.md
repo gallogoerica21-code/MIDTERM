@@ -74,6 +74,7 @@ Run `main.py` from the project root. Do NOT open or run `views/tracker_view.py` 
 The professional interface includes:
 
 - Two-panel secure login/register screen
+- Account signup requires an email verification code before account creation
 - Sidebar navigation
 - Dashboard summary cards
 - Search and category filters
@@ -117,10 +118,10 @@ Render Free web services may spin down after 15 minutes without traffic and have
 
 ## Brevo email notifications
 
-The web app can use Brevo to email `gallogoerica21@gmail.com` when a user submits a password-reset request. The email contains the registered account email and directs the administrator to review the request in the app; it never includes a submitted password.
+The web app uses Brevo to email verification codes to new users and to notify `gallogoerica21@gmail.com` when a user submits a password-reset request. Account creation is only completed after the new user enters the valid code. Codes expire after 10 minutes and allow at most five incorrect attempts. Reset notifications direct the administrator to review the request in the app and never include a submitted password.
 
-1. In Brevo, create an API key and verify `gallogoerica21@gmail.com` as a sender.
-2. Add the API key to the Render service's `BREVO_API_KEY` environment variable. The Blueprint sets the verified sender and notification recipient to `gallogoerica21@gmail.com`.
+1. In Brevo, create an API key and verify `BREVO_SENDER_EMAIL` as a sender.
+2. Add the API key to the Render service's `BREVO_API_KEY` environment variable. The Blueprint sets the sender and reset-notification recipient to `gallogoerica21@gmail.com`.
 3. For local development, set `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, and `BREVO_NOTIFICATION_EMAIL` in the ignored `.env` file.
 
 If Brevo is unconfigured or unavailable, the password-reset request remains saved for administrator review, and the requester is told that the notification could not be sent.

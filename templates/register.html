@@ -3,19 +3,35 @@
 <section class="card">
   <h2>Create Account</h2>
   <p>Create a new user account. Admin accounts must be created by an administrator.</p>
-  <form method="post">
-    <label>Username</label>
-    <input name="username" required>
-    <label>Email</label>
-    <input name="email" type="email" required>
-    <label>Password</label>
-    <input name="password" type="password" required>
-    <label>Confirm Password</label>
-    <input name="confirm_password" type="password" required>
-    <div class="form-actions">
-      <button type="submit">Create Account</button>
-    </div>
-  </form>
+  {% if otp_sent %}
+    <p>Enter the verification code sent to <strong>{{ email }}</strong>. The code expires in 10 minutes.</p>
+    <form method="post" action="{{ url_for('verify_registration') }}">
+      <label>Email verification code</label>
+      <input name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required>
+      <label>Password</label>
+      <input name="password" type="password" required>
+      <label>Confirm Password</label>
+      <input name="confirm_password" type="password" required>
+      <div class="form-actions">
+        <button type="submit">Verify Email and Create Account</button>
+      </div>
+    </form>
+    <form method="post" action="{{ url_for('register') }}" style="margin-top:10px">
+      <input type="hidden" name="username" value="{{ username }}">
+      <input type="hidden" name="email" value="{{ email }}">
+      <button type="submit">Resend verification code</button>
+    </form>
+  {% else %}
+    <form method="post">
+      <label>Username</label>
+      <input name="username" value="{{ username or '' }}" required>
+      <label>Email</label>
+      <input name="email" type="email" value="{{ email or '' }}" required>
+      <div class="form-actions">
+        <button type="submit">Send Verification Code</button>
+      </div>
+    </form>
+  {% endif %}
   <p style="margin-top:12px">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
 </section>
 {% endblock %}
