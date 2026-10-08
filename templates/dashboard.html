@@ -159,6 +159,7 @@
     </form>
 
     <h3 style="margin-top:18px">Inventory</h3>
+    <div class="table-scroll">
     <table>
       <thead>
         <tr><th>ID</th><th>Name</th><th>Category</th><th>Qty</th><th>Status</th></tr>
@@ -175,6 +176,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
   </section>
 
   {% if user.get('role') != 'ADMIN' %}
@@ -195,6 +197,7 @@
     </form>
 
     <h3 style="margin-top:18px">My Borrow Requests</h3>
+    <div class="table-scroll">
     <table>
       <thead><tr><th>ID</th><th>Item</th><th>Qty</th><th>Status</th></tr></thead>
       <tbody>
@@ -208,6 +211,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
   </aside>
   {% endif %}
 </div>

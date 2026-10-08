@@ -653,6 +653,8 @@ button.secondary:hover,
 .table-scroll {
   width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .empty-requests {
@@ -961,19 +963,45 @@ footer p {
     padding: 22px 18px;
   }
 
+  .site-header-inner {
+    flex-wrap: wrap;
+  }
+
+  .site-header nav {
+    justify-content: flex-start;
+  }
+
   .login-grid {
     grid-template-columns: 1fr;
     gap: 16px;
     min-height: 0;
   }
 
+  .brand-inner {
+    max-width: 560px;
+  }
+
   .brand-panel {
-    min-height: 230px;
-    padding: 28px;
+    min-height: 0;
+    padding: 24px 28px;
   }
 
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .grid > *,
+  .admin-dashboard,
+  .admin-dashboard > * {
+    min-width: 0;
+  }
+
+  .table-scroll table {
+    min-width: 640px;
+  }
+
+  .inventory-table {
+    min-width: 620px;
   }
 
   .admin-overview-cards {
@@ -981,7 +1009,18 @@ footer p {
   }
 
   .admin-inventory-filter {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  }
+
+  .admin-inventory-filter button {
+    width: 100%;
+  }
+
+  .admin-inventory-filter .clear-filter-link {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
   }
 
 }
@@ -990,26 +1029,75 @@ footer p {
   .site-header-inner {
     align-items: flex-start;
     flex-direction: column;
-    gap: 10px;
-    padding: 14px 18px;
+    gap: 8px;
+    padding: 14px 16px;
+  }
+
+  .site-header h1 {
+    font-size: 19px;
+    overflow-wrap: anywhere;
   }
 
   .site-header nav {
     justify-content: flex-start;
-    margin: 0 -8px;
+    margin: 0 -6px;
+    gap: 2px;
   }
 
   .site-header nav a {
-    padding: 8px;
+    padding: 8px 6px;
+    font-size: 13px;
   }
 
   main > .container {
-    padding: 16px 12px;
+    padding: 16px 10px;
   }
 
   .card {
-    padding: 20px;
+    padding: 18px 16px;
     border-radius: 13px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  .login-grid {
+    gap: 12px;
+  }
+
+  .brand-panel {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .brand-icon {
+    margin-bottom: 8px;
+    font-size: 38px;
+  }
+
+  .brand-panel h3 {
+    font-size: 19px;
+  }
+
+  .brand-panel .tagline {
+    margin-top: 14px;
+  }
+
+  .auth-card {
+    padding: 22px 18px;
+  }
+
+  .auth-card h2 {
+    font-size: 25px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions > * {
+    width: 100%;
   }
 
   .filter {
@@ -1024,13 +1112,32 @@ footer p {
     grid-template-columns: 1fr;
   }
 
+  .admin-inventory-filter {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .admin-dashboard-heading {
     align-items: flex-start;
     flex-direction: column;
   }
 
+  .admin-dashboard-heading h2 {
+    font-size: 24px;
+  }
+
+  .admin-dashboard-heading > div,
+  .admin-section-heading > div:first-child {
+    min-width: 0;
+    width: 100%;
+  }
+
   .admin-review-button {
     width: 100%;
+  }
+
+  .admin-overview-card > span,
+  .admin-overview-card small {
+    overflow-wrap: anywhere;
   }
 
   .admin-overview-cards {
@@ -1047,7 +1154,7 @@ footer p {
   }
 
   .admin-inventory-card {
-    padding: 18px;
+    padding: 16px 12px;
   }
 
   .admin-section-heading {
@@ -1059,6 +1166,38 @@ footer p {
   .inventory-heading-actions {
     width: 100%;
     justify-content: space-between;
+    gap: 8px;
+  }
+
+  .inventory-add-form {
+    right: -4px;
+    width: min(380px, calc(100vw - 36px));
+  }
+
+  .inventory-edit-form {
+    position: fixed;
+    z-index: 20;
+    top: 50%;
+    left: 50%;
+    width: min(360px, calc(100vw - 28px));
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    transform: translate(-50%, -50%);
+  }
+
+  .table-scroll {
+    margin-right: -4px;
+    padding-bottom: 4px;
+  }
+
+  .table-scroll table,
+  .inventory-table {
+    min-width: 640px;
+  }
+
+  .admin-approval-card table,
+  .admin-return-requests table {
+    min-width: 760px;
   }
 
   .profile-details,
@@ -1073,5 +1212,51 @@ footer p {
 
   td form {
     display: flex;
+  }
+
+  .approval-actions,
+  .approval-actions form {
+    flex-wrap: nowrap;
+  }
+
+  .approval-actions button {
+    min-width: 76px;
+  }
+
+  footer {
+    padding: 10px 14px 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .site-header-inner {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .site-header nav {
+    margin-right: -4px;
+    margin-left: -4px;
+  }
+
+  .site-header nav a {
+    padding-right: 5px;
+    padding-left: 5px;
+    font-size: 12px;
+  }
+
+  main > .container {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .card,
+  .admin-inventory-card {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .admin-overview-cards {
+    grid-template-columns: 1fr;
   }
 }
