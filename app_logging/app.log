@@ -10703,3 +10703,6 @@ psycopg.OperationalError: failed to resolve host 'db.vktphlhewpxgbndjjkux.supaba
 2026-10-08 17:48:57 - INFO - WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
  * Running on http://127.0.0.1:5000
 2026-10-08 17:48:57 - INFO - Press CTRL+C to quit
+2026-10-08 17:50:44 - INFO - 127.0.0.1 - - [08/Oct/2026 17:50:44] "GET /api/live-revision HTTP/1.1" 401 -
+2026-10-08 18:05:53 - INFO - 127.0.0.1 - - [08/Oct/2026 18:05:53] "GET /api/live-revision HTTP/1.1" 401 -
+2026-10-08 18:11:39 - INFO - 127.0.0.1 - - [08/Oct/2026 18:11:39] "GET /api/live-revision HTTP/1.1" 401 -

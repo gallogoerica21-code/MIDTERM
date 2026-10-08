@@ -16,6 +16,7 @@ from logger import logger
 from services.brevo_email import (
     BrevoEmailError,
     send_password_reset_notification,
+    send_password_reset_otp,
     send_registration_otp,
 )
 import io
@@ -234,38 +235,99 @@ def _registration_otp_digest(email, code):
     ).hexdigest()
 
 
+def _reset_otp_digest(email, code):
+    return hmac.new(
+        app.secret_key.encode("utf-8"),
+        f"{email.lower()}:{code}".encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
+
+
 @app.route("/reset", methods=["GET", "POST"])
 def reset_unlock():
     auth = HardwareAuthController()
-    # Determine if this is an unlock-only request (admins will use this)
     unlock = request.args.get("unlock") in ("1", "true", "True")
+    pending = session.get("pending_reset")
 
     if request.method == "POST":
         email = request.form.get("email", "").strip()
-        if unlock:
-            success, msg = auth.request_password_reset(email, None)
-        else:
-            new_password = request.form.get("new_password", "")
-            success, msg = auth.request_password_reset(email, new_password)
+        otp = request.form.get("otp", "").strip()
+        new_password = request.form.get("new_password", "")
 
-        if success:
-            try:
-                send_password_reset_notification(email)
-            except BrevoEmailError as exc:
-                logger.error("Brevo notification failed: %s", exc)
-                flash(
-                    "Your request was saved, but the administrator email could "
-                    "not be sent. Please contact an administrator.",
-                    "info",
-                )
+        if pending and pending.get("email", "").lower() == email.lower() and otp:
+            if int(time.time()) > pending["expires_at"]:
+                session.pop("pending_reset", None)
+                flash("Your reset code expired. Request a new one.", "danger")
+                return render_template("reset.html", unlock=unlock, email=email, otp_sent=True)
+
+            if pending["attempts"] >= 5:
+                session.pop("pending_reset", None)
+                flash("Too many incorrect reset codes. Request a new code.", "danger")
+                return render_template("reset.html", unlock=unlock, email=email)
+
+            expected = pending["code_digest"]
+            supplied = _reset_otp_digest(email, otp)
+            if not hmac.compare_digest(expected, supplied):
+                pending["attempts"] += 1
+                session["pending_reset"] = pending
+                flash("Incorrect verification code.", "danger")
+                return render_template("reset.html", unlock=unlock, email=email, otp_sent=True)
+
+            if unlock:
+                success, msg = auth.request_password_reset(email, None)
             else:
-                flash(msg, "success")
-        else:
-            flash(msg, "danger")
-        if success:
-            return redirect(url_for("login"))
+                success, msg = auth.request_password_reset(email, new_password)
 
-    return render_template("reset.html", unlock=unlock)
+            if success:
+                session.pop("pending_reset", None)
+                try:
+                    send_password_reset_notification(email)
+                except BrevoEmailError as exc:
+                    logger.error("Brevo notification failed: %s", exc)
+                    flash(
+                        "Your request was saved, but the administrator email could "
+                        "not be sent. Please contact an administrator.",
+                        "info",
+                    )
+                else:
+                    flash(msg, "success")
+                return redirect(url_for("login"))
+
+            flash(msg, "danger")
+            return render_template("reset.html", unlock=unlock, email=email, otp_sent=True)
+
+        if not email:
+            flash("Enter your email address.", "danger")
+            return render_template("reset.html", unlock=unlock)
+
+        if not unlock and not new_password:
+            flash("Enter a new password.", "danger")
+            return render_template("reset.html", unlock=unlock, email=email)
+
+        code = f"{secrets.randbelow(1_000_000):06d}"
+        pending = {
+            "email": email,
+            "code_digest": _reset_otp_digest(email, code),
+            "expires_at": int(time.time()) + 600,
+            "sent_at": int(time.time()),
+            "attempts": 0,
+        }
+
+        try:
+            send_password_reset_otp(email, code)
+        except BrevoEmailError as exc:
+            logger.error("Brevo reset OTP delivery failed: %s", exc)
+            flash(
+                "We could not send a verification code. Please try again later.",
+                "danger",
+            )
+            return render_template("reset.html", unlock=unlock, email=email)
+
+        session["pending_reset"] = pending
+        flash("A 6-digit verification code was sent to your email address.", "success")
+        return render_template("reset.html", unlock=unlock, email=email, otp_sent=True)
+
+    return render_template("reset.html", unlock=unlock, email=pending.get("email", "") if pending else "", otp_sent=bool(pending))
 
 
 @app.route("/logout")

@@ -6,9 +6,13 @@
     <p>Submit an account unlock request. An administrator will review and unlock your account.</p>
     <form method="post">
       <label>Registered Email</label>
-      <input name="email" type="email" required>
+      <input name="email" type="email" value="{{ email or '' }}" required>
+      {% if otp_sent %}
+        <label>Verification Code</label>
+        <input name="otp" type="text" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit code" required>
+      {% endif %}
       <div class="form-actions">
-        <button type="submit">Request Unlock</button>
+        <button type="submit">{% if otp_sent %}Verify &amp; Request Unlock{% else %}Request Unlock{% endif %}</button>
       </div>
     </form>
   {% else %}
@@ -16,11 +20,15 @@
     <p>Submit a new-password request for administrator approval.</p>
     <form method="post">
       <label>Registered Email</label>
-      <input name="email" type="email" required>
+      <input name="email" type="email" value="{{ email or '' }}" required>
+      {% if otp_sent %}
+        <label>Verification Code</label>
+        <input name="otp" type="text" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit code" required>
+      {% endif %}
       <label>New Password</label>
-      <input name="new_password" type="password" required>
+      <input name="new_password" type="password" value="{{ '' if otp_sent else '' }}" required>
       <div class="form-actions">
-        <button type="submit">Submit Request</button>
+        <button type="submit">{% if otp_sent %}Verify &amp; Submit Request{% else %}Send Code{% endif %}</button>
       </div>
     </form>
   {% endif %}

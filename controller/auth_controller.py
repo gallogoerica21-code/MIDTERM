@@ -213,14 +213,21 @@ class AuthController:
         return True, "Password changed successfully."
 
     def request_password_reset(self, email, new_password):
-        try:
-            validated = UserRegisterSchema(
-                username="reset_user",
-                email=email,
-                password=new_password,
-            )
-        except ValidationError:
-            return False, "Enter a valid email and a strong new password."
+        if not email:
+            return False, "Enter a valid email address."
+
+        if new_password is not None:
+            try:
+                validated = UserRegisterSchema(
+                    username="reset_user",
+                    email=email,
+                    password=new_password,
+                )
+            except ValidationError:
+                return False, "Enter a valid email and a strong new password."
+            requested_hash = self._hash_password(validated.password)
+        else:
+            requested_hash = "__UNLOCK__"
 
         with connect_db(self.db_name) as conn:
             row = conn.execute(
@@ -237,7 +244,7 @@ class AuthController:
                 (user_id, email, requested_password_hash)
                 VALUES (?, ?, ?)
                 """,
-                (row[0], email, self._hash_password(validated.password)),
+                (row[0], email, requested_hash),
             )
 
         logger.info("Password reset requested: '%s'", row[1])
@@ -283,16 +290,27 @@ class AuthController:
             status = "APPROVED" if approve else "REJECTED"
 
             if approve:
-                conn.execute(
-                    """
-                    UPDATE users
-                    SET password_hash = ?,
-                        failed_attempts = 0,
-                        locked = 0
-                    WHERE id = ?
-                    """,
-                    (row[1], row[0]),
-                )
+                if row[1] != "__UNLOCK__":
+                    conn.execute(
+                        """
+                        UPDATE users
+                        SET password_hash = ?,
+                            failed_attempts = 0,
+                            locked = 0
+                        WHERE id = ?
+                        """,
+                        (row[1], row[0]),
+                    )
+                else:
+                    conn.execute(
+                        """
+                        UPDATE users
+                        SET failed_attempts = 0,
+                            locked = 0
+                        WHERE id = ?
+                        """,
+                        (row[0],),
+                    )
 
             conn.execute(
                 """
