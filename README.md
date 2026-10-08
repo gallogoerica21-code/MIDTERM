@@ -115,6 +115,16 @@ This repository includes a Render Blueprint (`render.yaml`) for the Flask web ap
 
 Render Free web services may spin down after 15 minutes without traffic and have an ephemeral filesystem; this app uses Supabase for persistent shared data rather than relying on files stored by the web service. Free service usage limits and availability are controlled by Render.
 
+## Brevo email notifications
+
+The web app can use Brevo to email `gallogoerica21@gmail.com` when a user submits a password-reset request. The email contains the registered account email and directs the administrator to review the request in the app; it never includes a submitted password.
+
+1. In Brevo, create an API key and verify `gallogoerica21@gmail.com` as a sender.
+2. Add the API key to the Render service's `BREVO_API_KEY` environment variable. The Blueprint sets the verified sender and notification recipient to `gallogoerica21@gmail.com`.
+3. For local development, set `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, and `BREVO_NOTIFICATION_EMAIL` in the ignored `.env` file.
+
+If Brevo is unconfigured or unavailable, the password-reset request remains saved for administrator review, and the requester is told that the notification could not be sent.
+
 ## Deliverables created by this conversion
 
 - Original desktop Python source preserved (do not delete `views/` or `main.py`).

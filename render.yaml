@@ -13,3 +13,9 @@ services:
         sync: false
       - key: FLASK_SECRET_KEY
         generateValue: true
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
+        value: gallogoerica21@gmail.com
+      - key: BREVO_NOTIFICATION_EMAIL
+        value: gallogoerica21@gmail.com

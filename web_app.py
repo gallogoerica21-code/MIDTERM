@@ -11,6 +11,8 @@ from flask import (
 from controller.tracker_controller import HardwareAuthController
 from controller.hardware_controller import HardwareController
 from models.database import init_hardware_db
+from logger import logger
+from services.brevo_email import BrevoEmailError, send_password_reset_notification
 import io
 import csv
 import hashlib
@@ -102,7 +104,20 @@ def reset_unlock():
             new_password = request.form.get("new_password", "")
             success, msg = auth.request_password_reset(email, new_password)
 
-        flash(msg, "success" if success else "danger")
+        if success:
+            try:
+                send_password_reset_notification(email)
+            except BrevoEmailError as exc:
+                logger.error("Brevo notification failed: %s", exc)
+                flash(
+                    "Your request was saved, but the administrator email could "
+                    "not be sent. Please contact an administrator.",
+                    "info",
+                )
+            else:
+                flash(msg, "success")
+        else:
+            flash(msg, "danger")
         if success:
             return redirect(url_for("login"))
 
