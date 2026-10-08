@@ -100,7 +100,7 @@ Set `FLASK_SECRET_KEY` to a persistent random value if login sessions should sur
 
 ## Supabase setup
 
-The Flask app can use a shared Supabase PostgreSQL database. **If a database password has been shared in chat, reset it in Supabase before connecting.** Never commit or share the connection string.
+The Flask app can use a shared Supabase PostgreSQL database. **If a database password has been shared in chat, reset it in Supabase before connecting.** Never commit or share the connection string. Keep the database connection string server-side; never expose it in browser code. App tables have row-level security enabled so the public Supabase API cannot read them without an explicit policy.
 
 1. Install the project dependencies with `pip install -r requirements.txt`.
 2. Copy `.env.example` to `.env` and set `SUPABASE_DB_URL` using the newly reset password. URL-encode any reserved characters in the password. `.env` is ignored by Git.

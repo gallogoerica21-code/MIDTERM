@@ -295,6 +295,14 @@ def init_postgres_hardware_db(database_url):
                 ALTER COLUMN repayment_due_date DROP NOT NULL
                 """
             )
+            for table in (
+                "users",
+                "hardware",
+                "borrowed_items",
+                "return_requests",
+                "password_reset_requests",
+            ):
+                conn.execute(f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY")
             conn.execute(
                 "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email)"
             )
