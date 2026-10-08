@@ -109,6 +109,10 @@ The Flask app can use a shared Supabase PostgreSQL database. **If a database pas
 
 The dashboard and admin approvals page check for shared database changes every five seconds and reload when displayed data changes. This is near-real-time polling, not a Supabase Realtime WebSocket subscription.
 
+## Deploy to Render
+
+This repository includes a Render Blueprint (`render.yaml`) for the Flask web app. In Render, create a new Blueprint and select this GitHub repository and the `master` branch. Before deploying, set the `SUPABASE_DB_URL` secret environment variable on the Render service to the Supabase Session pooler URL; do not commit `.env` or paste database credentials into chat. The Blueprint generates a persistent `FLASK_SECRET_KEY`, installs `requirements.txt`, starts Gunicorn on Render's assigned port, and uses `/_ping` as its health check. Automatic deploys are enabled for new commits to `master`.
+
 ## Deliverables created by this conversion
 
 - Original desktop Python source preserved (do not delete `views/` or `main.py`).

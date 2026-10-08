@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: campus-hardware-inventory
+    runtime: python
+    branch: master
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT web_app:app
+    healthCheckPath: /_ping
+    autoDeploy: true
+    envVars:
+      - key: SUPABASE_DB_URL
+        sync: false
+      - key: FLASK_SECRET_KEY
+        generateValue: true
