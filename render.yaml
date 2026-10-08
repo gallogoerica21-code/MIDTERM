@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: campus-hardware-inventory
+    name: campinventory
     runtime: python
     plan: free
     branch: master
